@@ -10,6 +10,8 @@ public interface UserDao {
 
     void updateUser(User user);
 
+    public void saveUser(User user);
+
     User getUserById(Long id);
 
     List<User> getAllUsers();

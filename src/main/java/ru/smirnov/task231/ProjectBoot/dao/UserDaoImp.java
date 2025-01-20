@@ -1,9 +1,9 @@
 package ru.smirnov.task231.ProjectBoot.dao;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.smirnov.task231.ProjectBoot.model.User;
 
 import java.util.List;
@@ -15,22 +15,34 @@ public class UserDaoImp implements UserDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional
     @Override
     public void removeUserById(final long id) {
         final User user = getUserById(id);
         entityManager.remove(user);
     }
 
-    @Transactional
     @Override
-    public void updateUser(final User user) {
-        entityManager.merge(user);
+    public void saveUser(final User user) {
+        entityManager.persist(user);
     }
 
     @Override
+    public void updateUser(final User user) {
+        final User userUpdate = entityManager.find(User.class, user.getId());
+        if (userUpdate == null) {
+            throw new EntityNotFoundException("Cannot update user. User with id: " + user.getId() + " not found");
+        }
+        entityManager.merge(user);
+    }
+
+
+    @Override
     public User getUserById(final Long id) {
-        return entityManager.find(User.class, id);
+        final User user = entityManager.find(User.class, id);
+        if (user == null) {
+            throw new EntityNotFoundException("Cannot get user. User with id: " + id + " not found");
+        }
+        return user;
     }
 
     @Override

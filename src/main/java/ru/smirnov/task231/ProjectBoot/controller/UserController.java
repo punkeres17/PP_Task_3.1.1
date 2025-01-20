@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,11 +35,8 @@ public class UserController {
     }
 
     @PostMapping("/new")
-    public String addNewUser(@RequestParam("name") final String name, @RequestParam("age") final int age) {
-        final User user = new User();
-        user.setName(name);
-        user.setAge(age);
-        userService.updateUser(user);
+    public String addNewUser(@ModelAttribute("user") final User user) {
+        userService.saveUser(user);
         return "redirect:/users";
     }
 
@@ -49,14 +47,7 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public String editUser(
-            @RequestParam("id") final Long id,
-            @RequestParam("name") final String name,
-            @RequestParam("age") final int age
-    ) {
-        final User user = userService.getUserById(id);
-        user.setName(name);
-        user.setAge(age);
+    public String editUser(@ModelAttribute("user") final User user) {
         userService.updateUser(user);
         return "redirect:/users";
     }
